@@ -1,6 +1,11 @@
 package modes;
 
+import models.Range;
+import models.Result;
+import solver.PrimeCalculator;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
@@ -27,13 +32,13 @@ public class Client implements Runnable {
                 if (isStopped()) {
                     return;
                 }
-                throw new RuntimeException("* Error connecting to server", e);
+                throw new RuntimeException("Error connecting to server", e);
             }
 
             try {
                 waitForTask(socket);
             } catch (Exception e) {
-                System.out.println("* Error sending message!");
+                System.out.println("Error!");
             }
         }
         System.exit(0);
@@ -42,8 +47,19 @@ public class Client implements Runnable {
     private void waitForTask(Socket socket) throws IOException {
 
         while (!isStopped()) {
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            try {
+                Range range = (Range) ois.readObject();
 
+                PrimeCalculator primeCalculator = new PrimeCalculator(range);
+                Result result = primeCalculator.calculate();
+
+                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+                oos.writeObject(result);
+
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 

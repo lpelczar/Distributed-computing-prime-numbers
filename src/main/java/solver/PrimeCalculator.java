@@ -11,7 +11,7 @@ public class PrimeCalculator {
 
     private Range range;
 
-    PrimeCalculator(Range range) {
+    public PrimeCalculator(Range range) {
         this.range = range;
     }
 
