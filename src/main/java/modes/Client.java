@@ -54,7 +54,8 @@ public class Client implements Runnable {
 
                 PrimeCalculator primeCalculator = new PrimeCalculator(range);
                 Result result = primeCalculator.calculate();
-
+                System.out.println("I have finished!");
+                System.out.println("I have found these prime numbers: " + result);
                 oos.writeObject(result);
 
             } catch (ClassNotFoundException e) {
