@@ -1,10 +1,11 @@
 package models;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Range {
+public class Range implements Serializable {
 
     private BigInteger min;
     private BigInteger max;
