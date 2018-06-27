@@ -1,6 +1,7 @@
 package server;
 
 import models.Range;
+import models.Result;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -77,14 +78,24 @@ public class Server implements Runnable {
 
     private void waitForResults(List<ObjectInputStream> inputStreams) {
 
-        boolean isCalculationFinished = false;
+        List<Result> results = new ArrayList<>();
 
-        while (!isCalculationFinished) {
+        while (results.size() < inputStreams.size()) {
 
             for (ObjectInputStream ois : inputStreams) {
-                ois.readObject();
+
+                try {
+                    Result result = (Result) ois.readObject();
+                    results.add(result);
+
+                } catch (ClassNotFoundException | IOException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
+
+        System.out.println(results);
     }
 
     private synchronized boolean isStopped() {
