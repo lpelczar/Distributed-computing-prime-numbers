@@ -39,6 +39,7 @@ public class Client implements Runnable {
                 waitForTask(socket);
             } catch (Exception e) {
                 System.out.println("Error!");
+                e.printStackTrace();
             }
         }
         System.exit(0);
@@ -57,6 +58,7 @@ public class Client implements Runnable {
                 System.out.println("I have finished!");
                 System.out.println("I have found these prime numbers: " + result);
                 oos.writeObject(result);
+                stop();
 
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
