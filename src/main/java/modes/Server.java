@@ -70,7 +70,7 @@ public class Server implements Runnable {
             inputStreams.add(ois);
         }
 
-        List<Range> ranges = range.divideRanges(2);
+        List<Range> ranges = range.divideRanges(3);
 
         for (int i = 0; i < ranges.size(); i++) {
             outputStreams.get(i).writeObject(ranges.get(i));
@@ -83,22 +83,25 @@ public class Server implements Runnable {
 
         List<Result> results = new ArrayList<>();
 
-        while (results.size() < inputStreams.size()) {
+       do{
 
             for (ObjectInputStream ois : inputStreams) {
 
                 try {
                     Result result = (Result) ois.readObject();
+                    System.out.println("Client end work");
                     results.add(result);
 
                 } catch (ClassNotFoundException | IOException e) {
+                    System.out.println("ERROR");
                     e.printStackTrace();
                 }
 
             }
-        }
-
+        } while (!(inputStreams.size() <= results.size()));
+        System.out.println("END CALCULATING");
         System.out.println(results);
+        stop();
     }
 
     private synchronized boolean isStopped() {
