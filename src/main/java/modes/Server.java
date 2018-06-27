@@ -63,8 +63,11 @@ public class Server implements Runnable {
         List<ObjectInputStream> inputStreams = new ArrayList<>();
 
         for (Socket socket : clients) {
-            outputStreams.add(new ObjectOutputStream(socket.getOutputStream()));
-            inputStreams.add(new ObjectInputStream(socket.getInputStream()));
+            System.out.println("Getting streams!");
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            outputStreams.add(oos);
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            inputStreams.add(ois);
         }
 
         List<Range> ranges = range.divideRanges(2);
