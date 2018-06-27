@@ -48,13 +48,13 @@ public class Client implements Runnable {
 
         while (!isStopped()) {
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             try {
                 Range range = (Range) ois.readObject();
 
                 PrimeCalculator primeCalculator = new PrimeCalculator(range);
                 Result result = primeCalculator.calculate();
 
-                ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 oos.writeObject(result);
 
             } catch (ClassNotFoundException e) {
