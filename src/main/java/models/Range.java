@@ -48,6 +48,14 @@ public class Range implements Serializable {
         this.max = max;
     }
 
+    public BigInteger getMin() {
+        return min;
+    }
+
+    public BigInteger getMax() {
+        return max;
+    }
+
     @Override
     public String toString() {
         return min + ":" + max;

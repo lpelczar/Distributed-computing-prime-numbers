@@ -1,4 +1,4 @@
-package server;
+package modes;
 
 import models.Range;
 import models.Result;
