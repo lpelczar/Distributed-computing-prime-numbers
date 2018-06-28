@@ -4,20 +4,20 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IntegerCheckerTest {
+class NumericCheckerTest {
 
     @Test
     void test_PassEmptyString(){
 
         String empty = "";
-        assertFalse(IntegerChecker.isInteger(empty));
+        assertFalse(NumericChecker.isNumeric(empty));
     }
 
     @Test
     void test_PassNonNumricValues(){
 
         String word = "blabla123";
-        assertFalse(IntegerChecker.isInteger(word));
+        assertFalse(NumericChecker.isNumeric(word));
     }
 
 }

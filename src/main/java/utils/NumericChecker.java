@@ -1,10 +1,12 @@
 package utils;
 
-public class IntegerChecker {
+import java.math.BigInteger;
 
-    public static boolean isInteger(String s) {
+public class NumericChecker {
+
+    public static boolean isNumeric(String s) {
         try {
-            Integer.parseInt(s);
+            new BigInteger(s);
         } catch(NumberFormatException | NullPointerException e) {
             return false;
         }
