@@ -33,4 +33,12 @@ class PrimeCalculatorTest {
         assertEquals(testResult.toString(), "[2, 3, 5, 7]");
     }
 
+    @Test
+    void test_NegativeDigits(){
+        Range range = new Range(new BigInteger("-100"), BigInteger.ONE);
+        this.primeCalculator = new PrimeCalculator(range);
+        Result testResult = this.primeCalculator.calculate();
+        assertEquals(testResult.getNumbers().size(), 0);
+    }
+
 }
