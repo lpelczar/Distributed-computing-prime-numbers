@@ -19,6 +19,7 @@ public class Server implements Runnable {
     private Range range;
 
     private List<Socket> clients = new ArrayList<>();
+    private long startTime;
 
     public Server(int port, Range range) {
         this.serverPort = port;
@@ -58,7 +59,7 @@ public class Server implements Runnable {
     }
 
     private void start() throws IOException {
-
+        startTime = System.nanoTime();
         List<ObjectOutputStream> outputStreams = new ArrayList<>();
         List<ObjectInputStream> inputStreams = new ArrayList<>();
 
@@ -77,6 +78,7 @@ public class Server implements Runnable {
         }
 
         waitForResults(inputStreams);
+
     }
 
     private void waitForResults(List<ObjectInputStream> inputStreams) {
@@ -101,6 +103,9 @@ public class Server implements Runnable {
         } while (!(inputStreams.size() <= results.size()));
         System.out.println("END CALCULATING");
         System.out.println(results);
+        long endTime = System.nanoTime() - startTime;
+        double seconds = (double) endTime / 1000000000.0;
+        System.out.println(seconds);
         stop();
     }
 
