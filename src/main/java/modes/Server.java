@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,16 +66,12 @@ public class Server implements Runnable {
 
     private void start() throws IOException {
         startTime = System.nanoTime();
-//        List<ObjectOutputStream> outputStreams = new ArrayList<>();
-//        List<ObjectInputStream> inputStreams = new ArrayList<>();
         List<ClientData> clientsData = new ArrayList<>();
 
         for (Socket socket : clients) {
             System.out.println("Getting streams!");
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-//            outputStreams.add(oos);
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-//            inputStreams.add(ois);
             ClientData clientData = new ClientData(ois, oos);
             clientsData.add(clientData);
         }
@@ -85,16 +82,27 @@ public class Server implements Runnable {
             activeTasks.put(clientsData.get(i), ranges.get(i));
         }
         List<Result> results = new ArrayList<>();
+        List<ClientData> ready = new ArrayList<>();
         do {
             for(Entry<ClientData, Range> task : activeTasks.entrySet()){
+                try {
+                    task.getKey().getObjectOutputStream().writeObject(task.getValue());
+                    results.add(waitForResults(task.getKey()));
+                    ready.add(task.getKey());
+                    task.getKey().getObjectOutputStream().reset();
+                    System.out.println(ready.size());
 
+                }catch(IllegalStateException | SocketException e){
 
-                task.getKey().getObjectOutputStream().writeObject(task.getValue());
-                results.add(waitForResults(task.getKey()));
+                    if(ready.size() != 0){
+                        ready.get(0).getObjectOutputStream().writeObject(task.getValue());
+                        results.add(waitForResults(ready.get(0)));
+                    }
+                }
 
             }
         }while(!(clientsData.size() <= results.size()));
-
+        System.out.println((System.nanoTime() - startTime) / 1000000000);
         System.out.println(results);
         stop();
 
@@ -111,6 +119,7 @@ public class Server implements Runnable {
             return result;
 
         } catch (ClassNotFoundException | IOException e) {
+            System.out.println(clientData.getObjectOutputStream());
             throw new IllegalStateException("Client has disconnected");
         }
     }
