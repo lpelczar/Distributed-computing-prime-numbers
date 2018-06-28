@@ -1,15 +1,20 @@
 package modes;
 
+import models.ClientData;
 import models.Range;
 import models.Result;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Server implements Runnable {
 
@@ -60,54 +65,58 @@ public class Server implements Runnable {
 
     private void start() throws IOException {
         startTime = System.nanoTime();
-        List<ObjectOutputStream> outputStreams = new ArrayList<>();
-        List<ObjectInputStream> inputStreams = new ArrayList<>();
+//        List<ObjectOutputStream> outputStreams = new ArrayList<>();
+//        List<ObjectInputStream> inputStreams = new ArrayList<>();
+        List<ClientData> clientsData = new ArrayList<>();
 
         for (Socket socket : clients) {
             System.out.println("Getting streams!");
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            outputStreams.add(oos);
+//            outputStreams.add(oos);
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-            inputStreams.add(ois);
+//            inputStreams.add(ois);
+            ClientData clientData = new ClientData(ois, oos);
+            clientsData.add(clientData);
         }
 
         List<Range> ranges = range.divideRanges(3);
-
+        Map<ClientData, Range> activeTasks = new HashMap<>();
         for (int i = 0; i < ranges.size(); i++) {
-            outputStreams.get(i).writeObject(ranges.get(i));
+            activeTasks.put(clientsData.get(i), ranges.get(i));
         }
-
-        waitForResults(inputStreams);
-
-    }
-
-    private void waitForResults(List<ObjectInputStream> inputStreams) {
-
         List<Result> results = new ArrayList<>();
+        do {
+            for(Entry<ClientData, Range> task : activeTasks.entrySet()){
 
-       do{
 
-            for (ObjectInputStream ois : inputStreams) {
-
-                try {
-                    Result result = (Result) ois.readObject();
-                    System.out.println("Client end work");
-                    results.add(result);
-
-                } catch (ClassNotFoundException | IOException e) {
-                    System.out.println("ERROR");
-                    e.printStackTrace();
-                }
+                task.getKey().getObjectOutputStream().writeObject(task.getValue());
+                results.add(waitForResults(task.getKey()));
 
             }
-        } while (!(inputStreams.size() <= results.size()));
-        System.out.println("END CALCULATING");
+        }while(!(clientsData.size() <= results.size()));
+
         System.out.println(results);
-        long endTime = System.nanoTime() - startTime;
-        double seconds = (double) endTime / 1000000000.0;
-        System.out.println(seconds);
         stop();
+
+}
+
+
+
+    private Result waitForResults(ClientData clientData) {
+
+
+        try {
+            Result result = (Result) clientData.getObjectInputStream().readObject();
+            System.out.println("Client end work");
+            return result;
+
+        } catch (ClassNotFoundException | IOException e) {
+            throw new IllegalStateException("Client has disconnected");
+        }
     }
+
+
+
 
     private synchronized boolean isStopped() {
         return this.isStopped;

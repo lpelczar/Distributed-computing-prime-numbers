@@ -58,10 +58,11 @@ public class Client implements Runnable {
                 System.out.println("I have finished!");
                 System.out.println("I have found these prime numbers: " + result);
                 oos.writeObject(result);
-                stop();
 
             } catch (ClassNotFoundException e) {
                 System.out.println("Something wrong!");
+            } finally {
+                stop();
             }
         }
     }
