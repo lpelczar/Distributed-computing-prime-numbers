@@ -35,12 +35,26 @@ public class App {
             return;
         }
 
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter min value of range:");
-        String min = sc.nextLine();
-        System.out.println("Enter max value of range:");
-        String max = sc.nextLine();
-        Range range = new Range(new BigInteger(min), new BigInteger(max));
+        Range range = null;
+        boolean incorrectInput = true;
+
+        while (incorrectInput) {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Enter min value of range:");
+            String min = sc.nextLine();
+            System.out.println("Enter max value of range:");
+            String max = sc.nextLine();
+            if (IntegerChecker.isInteger(min) && IntegerChecker.isInteger(max)) {
+                try {
+                    range = new Range(new BigInteger(min), new BigInteger(max));
+                    incorrectInput = false;
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Enter correct values");
+                }
+            }else {
+                System.out.println("Enter only digits");
+            }
+        }
 
         String port = args[1];
         if (!IntegerChecker.isInteger(port)) {
