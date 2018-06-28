@@ -33,13 +33,13 @@ public class Client implements Runnable {
                 if (isStopped()) {
                     return;
                 }
-                throw new RuntimeException("Error connecting to server", e);
+                throw new RuntimeException("Error connecting to server");
             }
 
             try {
                 waitForTask(socket);
             } catch (IOException e) {
-                System.out.println("Error!");
+                System.out.println("Server is disconnected!");
             }
         }
         System.exit(0);
@@ -58,10 +58,10 @@ public class Client implements Runnable {
                 System.out.println("I have finished!");
                 System.out.println("I have found these prime numbers: " + result);
                 oos.writeObject(result);
-                stop();
-
             } catch (ClassNotFoundException e) {
                 System.out.println("Something wrong!");
+            } finally {
+                stop();
             }
         }
     }
