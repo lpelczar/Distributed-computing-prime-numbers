@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class Client implements Runnable {
 
@@ -37,9 +38,8 @@ public class Client implements Runnable {
 
             try {
                 waitForTask(socket);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 System.out.println("Error!");
-                e.printStackTrace();
             }
         }
         System.exit(0);
@@ -61,7 +61,7 @@ public class Client implements Runnable {
                 stop();
 
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                System.out.println("Something wrong!");
             }
         }
     }
