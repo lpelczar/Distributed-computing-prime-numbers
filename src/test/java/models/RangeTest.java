@@ -10,6 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class RangeTest {
 
     @Test
+    void test_ThrowException(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Range(BigInteger.TEN, BigInteger.ONE);
+        });
+    }
+
+    @Test
     void divisionTest() {
         BigInteger min = new BigInteger("10000");
         BigInteger max = new BigInteger("30000");
