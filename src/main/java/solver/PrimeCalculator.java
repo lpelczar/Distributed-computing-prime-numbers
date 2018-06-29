@@ -29,8 +29,13 @@ public class PrimeCalculator {
     }
 
     private boolean isPrime(BigInteger bigPrime){
-        if (bigPrime.compareTo(new BigInteger("1")) == 0 ||
-            bigPrime.compareTo(new BigInteger("2")) == 0 ||
+        if(bigPrime.compareTo(BigInteger.ONE) < 0){
+            return false;
+        }
+        if (bigPrime.compareTo(BigInteger.ONE) == 0){
+            return false;
+        }
+        if (bigPrime.compareTo(new BigInteger("2")) == 0 ||
             bigPrime.compareTo(new BigInteger("3")) == 0) {
             return true;
         }

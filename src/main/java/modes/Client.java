@@ -15,6 +15,8 @@ public class Client implements Runnable {
     private int serverPort;
     private String serverHost;
     private boolean isStopped;
+    private ObjectInputStream ois;
+    private ObjectOutputStream oos;
 
     public Client(String host, int port) {
         this.serverHost = host;
@@ -33,23 +35,24 @@ public class Client implements Runnable {
                 if (isStopped()) {
                     return;
                 }
-                throw new RuntimeException("Error connecting to server");
+                throw new RuntimeException("Error connecting to server", e);
             }
 
             try {
                 waitForTask(socket);
             } catch (IOException e) {
-                System.out.println("Server is disconnected!");
+                e.printStackTrace();
+                System.out.println("Error!");
             }
         }
         System.exit(0);
     }
 
     private void waitForTask(Socket socket) throws IOException {
-
+        ois = new ObjectInputStream(socket.getInputStream());
+        oos = new ObjectOutputStream(socket.getOutputStream());
         while (!isStopped()) {
-            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+
             try {
                 Range range = (Range) ois.readObject();
 
@@ -58,10 +61,14 @@ public class Client implements Runnable {
                 System.out.println("I have finished!");
                 System.out.println("I have found these prime numbers: " + result);
                 oos.writeObject(result);
+
             } catch (ClassNotFoundException e) {
                 System.out.println("Something wrong!");
             } finally {
-                stop();
+                System.out.println("RESET");
+//                ois.reset();
+//                oos.reset();
+//                run();
             }
         }
     }

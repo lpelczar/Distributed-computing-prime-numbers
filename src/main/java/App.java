@@ -2,7 +2,7 @@
 import models.Range;
 import modes.Client;
 import modes.Server;
-import utils.IntegerChecker;
+import utils.NumericChecker;
 
 import java.math.BigInteger;
 import java.util.Scanner;
@@ -35,15 +35,29 @@ public class App {
             return;
         }
 
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Enter min value of range:");
-        String min = sc.nextLine();
-        System.out.println("Enter max value of range:");
-        String max = sc.nextLine();
-        Range range = new Range(new BigInteger(min), new BigInteger(max));
+        Range range = null;
+        boolean incorrectInput = true;
+
+        while (incorrectInput) {
+            Scanner sc = new Scanner(System.in);
+            System.out.println("Enter min value of range:");
+            String min = sc.nextLine();
+            System.out.println("Enter max value of range:");
+            String max = sc.nextLine();
+            if (NumericChecker.isNumeric(min) && NumericChecker.isNumeric(max)) {
+                try {
+                    range = new Range(new BigInteger(min), new BigInteger(max));
+                    incorrectInput = false;
+                } catch (IllegalArgumentException e) {
+                    System.out.println("Enter correct values");
+                }
+            }else {
+                System.out.println("Enter only digits");
+            }
+        }
 
         String port = args[1];
-        if (!IntegerChecker.isInteger(port)) {
+        if (!NumericChecker.isNumeric(port)) {
             printConsoleArgumentsInformation();
             return;
         }
@@ -60,7 +74,7 @@ public class App {
         }
 
         String port = args[2];
-        if (!IntegerChecker.isInteger(port)) {
+        if (!NumericChecker.isNumeric(port)) {
             printConsoleArgumentsInformation();
             return;
         }
