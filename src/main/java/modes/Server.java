@@ -4,7 +4,6 @@ import models.ClientData;
 import models.Range;
 import models.Result;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -60,29 +59,32 @@ public class Server implements Runnable {
             }
 
         }
+        System.out.println("DURATION TIME: " + (System.nanoTime() - startTime) / 1000000000.0);
         System.out.println("Server Stopped.");
 
     }
 
     private void start() throws IOException {
         startTime = System.nanoTime();
-        List<ClientData> clientsData = new ArrayList<>();
+        List<ClientData> clientsData = getClientsData();
 
-        for (Socket socket : clients) {
-            System.out.println("Getting streams!");
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-            ClientData clientData = new ClientData(ois, oos);
-            clientsData.add(clientData);
-        }
+        List<Range> ranges = range.divideRanges(clientsData.size());
 
-        List<Range> ranges = range.divideRanges(3);
         Map<ClientData, Range> activeTasks = new HashMap<>();
         for (int i = 0; i < ranges.size(); i++) {
             activeTasks.put(clientsData.get(i), ranges.get(i));
         }
-        List<Result> results = new ArrayList<>();
+        List<Result> results = getResults(activeTasks);
+
+        System.out.println(results);
+        System.out.println(results.size());
+        stop();
+
+}
+
+    private List<Result> getResults(Map<ClientData, Range> activeTasks) throws IOException{
         List<ClientData> ready = new ArrayList<>();
+        List<Result> results = new ArrayList<>();
         do {
             for(Entry<ClientData, Range> task : activeTasks.entrySet()){
                 try {
@@ -90,7 +92,6 @@ public class Server implements Runnable {
                     results.add(waitForResults(task.getKey()));
                     ready.add(task.getKey());
                     task.getKey().getObjectOutputStream().reset();
-                    System.out.println(ready.size());
 
                 }catch(IllegalStateException | SocketException e){
 
@@ -101,13 +102,22 @@ public class Server implements Runnable {
                 }
 
             }
-        }while(!(clientsData.size() <= results.size()));
-        System.out.println((System.nanoTime() - startTime) / 1000000000);
-        System.out.println(results);
-        stop();
+        }while(!(activeTasks.size() <= results.size()));
 
-}
+        return results;
+    }
 
+    private List<ClientData> getClientsData() throws IOException{
+        List<ClientData> clientDataList = new ArrayList<>();
+        for (Socket socket : clients) {
+            System.out.println("Getting streams!");
+            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            ClientData clientData = new ClientData(ois, oos);
+            clientDataList.add(clientData);
+        }
+        return clientDataList;
+    }
 
 
     private Result waitForResults(ClientData clientData) {
