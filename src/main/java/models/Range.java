@@ -44,7 +44,7 @@ public class Range implements Serializable {
         return ranges;
     }
 
-    public void setMax(BigInteger max) {
+    private void setMax(BigInteger max) {
         this.max = max;
     }
 

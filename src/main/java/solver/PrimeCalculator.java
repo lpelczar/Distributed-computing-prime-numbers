@@ -44,6 +44,7 @@ public class PrimeCalculator {
         }
 
         for (BigInteger i = new BigInteger("3"); i.multiply(i).compareTo(bigPrime) < 1; i = i.add(new BigInteger("2")) ) {
+            System.out.println(i);
             if (BigInteger.ZERO.equals(bigPrime.mod(i))) {
                 return  false;
             }
