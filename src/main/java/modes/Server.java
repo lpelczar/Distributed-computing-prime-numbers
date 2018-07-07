@@ -45,6 +45,7 @@ public class Server implements Runnable {
                     clientSocket = this.serverSocket.accept();
                     clients.add(clientSocket);
                     System.out.println("Client " + counter + " has connected!");
+                    counter++;
                 } catch (IOException e) {
                     if (isStopped()) {
                         System.out.println("Server Stopped.");
@@ -55,6 +56,7 @@ public class Server implements Runnable {
 
             }
             try {
+                System.out.println("Calculating...");
                 start();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -77,9 +79,7 @@ public class Server implements Runnable {
             activeTasks.put(clientsData.get(i), ranges.get(i));
         }
         List<Result> results = getResults(activeTasks);
-
         System.out.println(results);
-        System.out.println(results.size());
         stop();
 
 }
