@@ -5,8 +5,8 @@ import java.io.ObjectOutputStream;
 
 public class ClientData {
 
-    ObjectInputStream objectInputStream;
-    ObjectOutputStream objectOutputStream;
+    private ObjectInputStream objectInputStream;
+    private ObjectOutputStream objectOutputStream;
 
     public ClientData(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) {
         this.objectInputStream = objectInputStream;
@@ -17,15 +17,8 @@ public class ClientData {
         return objectInputStream;
     }
 
-    public void setObjectInputStream(ObjectInputStream objectInputStream) {
-        this.objectInputStream = objectInputStream;
-    }
-
     public ObjectOutputStream getObjectOutputStream() {
         return objectOutputStream;
     }
 
-    public void setObjectOutputStream(ObjectOutputStream objectOutputStream) {
-        this.objectOutputStream = objectOutputStream;
-    }
 }
