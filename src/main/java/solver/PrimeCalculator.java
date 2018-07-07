@@ -39,7 +39,7 @@ public class PrimeCalculator {
             bigPrime.compareTo(new BigInteger("3")) == 0) {
             return true;
         }
-        if (BigInteger.ZERO.equals(bigPrime.mod(new BigInteger("2")))) {
+        if((bigPrime.shortValue() & 0x1) == 0){
             return false;
         }
 

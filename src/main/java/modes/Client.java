@@ -4,11 +4,11 @@ import models.Range;
 import models.Result;
 import solver.PrimeCalculator;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class Client implements Runnable {
 
@@ -40,9 +40,12 @@ public class Client implements Runnable {
 
             try {
                 waitForTask(socket);
+            } catch (EOFException e) {
+                System.out.println("SERVER DISCONNECTED");
+                stop();
             } catch (IOException e) {
+                System.out.println("ERROR");
                 e.printStackTrace();
-                System.out.println("Error!");
             }
         }
         System.exit(0);
@@ -58,17 +61,12 @@ public class Client implements Runnable {
 
                 PrimeCalculator primeCalculator = new PrimeCalculator(range);
                 Result result = primeCalculator.calculate();
+                oos.writeObject(result);
                 System.out.println("I have finished!");
                 System.out.println("I have found these prime numbers: " + result);
-                oos.writeObject(result);
 
             } catch (ClassNotFoundException e) {
                 System.out.println("Something wrong!");
-            } finally {
-                System.out.println("RESET");
-//                ois.reset();
-//                oos.reset();
-//                run();
             }
         }
     }
