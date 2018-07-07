@@ -36,13 +36,15 @@ public class Server implements Runnable {
         openServerSocket();
 
         while (!isStopped()) {
-
+            System.out.println("Waiting for clients!");
+            int counter = 1;
             while (clients.size() < 3) {
 
                 Socket clientSocket;
                 try {
                     clientSocket = this.serverSocket.accept();
                     clients.add(clientSocket);
+                    System.out.println("Client " + counter + " has connected!");
                 } catch (IOException e) {
                     if (isStopped()) {
                         System.out.println("Server Stopped.");
@@ -109,12 +111,14 @@ public class Server implements Runnable {
 
     private List<ClientData> getClientsData() throws IOException{
         List<ClientData> clientDataList = new ArrayList<>();
+        int counter = 1;
         for (Socket socket : clients) {
-            System.out.println("Getting streams!");
+            System.out.println("Getting client " + counter + " stream!");
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             ClientData clientData = new ClientData(ois, oos);
             clientDataList.add(clientData);
+            counter++;
         }
         return clientDataList;
     }
@@ -125,7 +129,7 @@ public class Server implements Runnable {
 
         try {
             Result result = (Result) clientData.getObjectInputStream().readObject();
-            System.out.println("Client end work");
+            System.out.println("Client has finished his work");
             return result;
 
         } catch (ClassNotFoundException | IOException e) {
@@ -141,7 +145,7 @@ public class Server implements Runnable {
         return this.isStopped;
     }
 
-    public synchronized void stop(){
+    private synchronized void stop(){
         this.isStopped = true;
     }
 
